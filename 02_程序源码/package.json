@@ -1,0 +1,13 @@
+{
+  "name": "smart-campus-bootstrap",
+  "version": "0.1.0",
+  "private": true,
+  "description": "前端全栈课程项目三 · 智慧校园综合管理平台 · 可运行起步骨架（Vue2 + Element UI + ECharts + Node Mock）",
+  "scripts": {
+    "start": "node server/app.js",
+    "dev": "node server/app.js"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
