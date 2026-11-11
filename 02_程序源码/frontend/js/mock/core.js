@@ -134,20 +134,26 @@
       }).sort(function (a, b) { return b.value - a.value; }).slice(0, 6);
 
       var userId = query.userId;
+      var current = null;
+      db.users.some(function (u) { if (u.id === userId) { current = u; return true; } return false; });
+      var role = current ? current.role : '';
+      // 未读口径必须和消息中心、顶栏角标一致：已撤回不算，只算发给自己角色的
       var unread = db.messages.filter(function (m) {
+        if (m.status === 'withdrawn') return false;
+        if (role && role !== 'admin' && m.targetRoles.indexOf(role) === -1 && m.targetRoles.indexOf('all') === -1) return false;
         return !db.receipts.some(function (r) { return r.messageId === m.id && r.userId === userId; });
       }).length;
 
       var alerts = [];
       db.bookings.filter(function (b) { return b.status === '待审批'; }).forEach(function (b) {
-        alerts.push({ level: 'warning', text: b.applicantName + ' 提交的「' + b.venueName + '」预约待审批', time: b.createdAt });
+        alerts.push({ level: 'warning', text: b.applicantName + ' 提交的「' + b.venueName + '」预约待审批', time: b.createdAt, to: '/campus/venue' });
       });
       db.leaves.filter(function (l) { return l.status === '待审批'; }).forEach(function (l) {
-        alerts.push({ level: 'info', text: l.studentName + ' 的' + l.type + '申请待审批', time: l.createdAt });
+        alerts.push({ level: 'info', text: l.studentName + ' 的' + l.type + '申请待审批', time: l.createdAt, to: '/student-affairs' });
       });
       db.offerings.forEach(function (o) {
         if (o.capacity && o.enrolled / o.capacity >= 0.9) {
-          alerts.push({ level: 'danger', text: o.courseName + '（' + o.className + '）选课率已达 ' + Math.round(o.enrolled / o.capacity * 100) + '%', time: '实时' });
+          alerts.push({ level: 'danger', text: o.courseName + '（' + o.className + '）选课率已达 ' + Math.round(o.enrolled / o.capacity * 100) + '%', time: '实时', to: '/courses' });
         }
       });
 
