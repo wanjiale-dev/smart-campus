@@ -91,6 +91,18 @@
       },
       levelText: function (level) {
         return { warning: '待审批', danger: '预警', info: '提示' }[level] || '提示';
+      },
+      goAlert: function (row) {
+        if (!row || !row.to) return;
+        var role = this.user.role;
+        var matched = this.$router.match(row.to).matched;
+        var meta = (matched[matched.length - 1] || {}).meta || {};
+        var roles = meta.roles || [];
+        if (roles.length && roles.indexOf(role) === -1) {
+          this.$message.info('该页面只对 ' + roles.map(function (r) { return Auth.roleName(r); }).join('、') + ' 开放，当前角色看不到');
+          return;
+        }
+        this.$router.push(row.to);
       }
     },
     template: [
@@ -120,8 +132,9 @@
       '    </div>',
       '  </div>',
       '  <div class="panel">',
-      '    <div class="panel-title">异常与待办预警 <span class="tip">数据来自预约、请假与选课容量</span></div>',
-      '    <el-table :data="stats.alerts" size="small" empty-text="暂无预警，一切正常">',
+      '    <div class="panel-title">异常与待办预警 <span class="tip">数据来自预约、请假与选课容量，点击行可跳转</span></div>',
+      '    <el-table :data="stats.alerts" size="small" empty-text="暂无预警，一切正常"',
+      '      :row-style="{ cursor: \'pointer\' }" @row-click="goAlert">',
       '      <el-table-column label="级别" width="100">',
       '        <template slot-scope="s"><el-tag :type="s.row.level" size="mini">{{ levelText(s.row.level) }}</el-tag></template>',
       '      </el-table-column>',
@@ -129,7 +142,7 @@
       '      <el-table-column prop="time" label="时间" width="160"></el-table-column>',
       '    </el-table>',
       '    <div class="todo-note">',
-      '      <b>本页待完成：</b>预警行点击跳转到对应业务页、图表点击下钻、大屏模式（选做）。',
+      '      <b>本页待完成：</b>图表点击下钻、大屏模式（选做）。预警行已可点击跳到对应业务页。',
       '      修改文件：<span class="mono">js/pages/dashboard.js</span>',
       '    </div>',
       '  </div>',
