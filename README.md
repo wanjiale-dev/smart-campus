@@ -192,6 +192,8 @@ POST /api/admin/reset
 
 ## 八、Git 协作流程
 
+> 组员第一次接手，先看 [`03_方案与交付文档/组员上手指引.md`](03_方案与交付文档/组员上手指引.md)，里面有从注册 GitHub 到提 PR 的完整步骤和常见报错对照。本节是精简版。
+
 ### 1. 第一次拉代码
 
 ```bash
@@ -215,7 +217,7 @@ git checkout -b feature/grades       # 石：成绩
 git checkout -b feature/portal       # 高：学生门户
 ```
 
-`main` 分支只保留能跑通的版本。要合并时在 GitHub 上开 Pull Request，由万（组长）review 后合并；小改动也可以合并完直接推 `main`，但推之前务必先 `git pull`。
+`main` 分支已开启保护规则：**任何人都不能直接推**，必须开 Pull Request；同时禁止强制推送和删除分支。PR 不强制要求他人批准，改完自己就能合并，不会卡流程。组长（万）有管理员权限可绕过，仅用于紧急修复。
 
 ### 3. 日常三步
 
