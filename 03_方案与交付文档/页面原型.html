@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面原型 · 智慧校园综合管理平台</title>
+<style>
+:root{
+  --ink:#2b3140; --sub:#6b7488; --line:#c8cedb; --line2:#e2e6ee;
+  --fill:#eef1f7; --fill2:#f7f9fc; --paper:#fff; --accent:#4a5a78;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:#e9edf4; color:var(--ink);
+  font:13px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+
+/* ---------- 外层：说明与导航 ---------- */
+.wrap{max-width:1560px;margin:0 auto;padding:20px 24px 48px}
+.head{display:flex;align-items:flex-end;gap:18px;margin-bottom:16px;flex-wrap:wrap}
+.head h1{font-size:19px;letter-spacing:-.01em;margin-bottom:3px}
+.head p{font-size:12.5px;color:var(--sub);max-width:760px}
+.legend{margin-left:auto;display:flex;gap:16px;font-size:11.5px;color:var(--sub);padding-bottom:3px}
+.legend i{display:inline-block;width:22px;height:0;border-top:1px solid var(--line);vertical-align:3px;margin-right:5px}
+.legend i.dash{border-top-style:dashed}
+
+.layout{display:flex;gap:18px;align-items:flex-start}
+.nav{
+  width:212px;flex:0 0 212px;background:#fff;border:1px solid var(--line2);
+  border-radius:6px;padding:8px;position:sticky;top:16px;
+}
+.nav .g{font-size:10.5px;color:#9aa3b5;letter-spacing:.08em;padding:9px 8px 3px}
+.nav button{
+  display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;
+  background:none;padding:6px 8px;border-radius:4px;font-size:12.5px;color:#3c4557;
+}
+.nav button:hover{background:#f2f5fa}
+.nav button.on{background:#eef1f7;font-weight:600}
+.nav button em{margin-left:auto;font-style:normal;font-size:10.5px;color:#9aa3b5;font-variant-numeric:tabular-nums}
+.stage{flex:1;min-width:0;overflow-x:auto;padding-bottom:8px}
+.stagebar{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--sub);margin-bottom:8px}
+.stagebar .sp{margin-left:auto;display:flex;gap:8px}
+.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11.5px;background:#eef1f7;padding:1px 6px;border-radius:3px;color:#4a5a78}
+
+/* ---------- 线框图通用元件 ---------- */
+.screen{
+  width:1180px;display:flex;background:var(--paper);border:1px solid var(--line);
+  border-radius:6px;overflow:hidden;min-height:600px;
+}
+.side{width:196px;flex:0 0 196px;background:#39414f;color:#d5dbe7;display:flex;flex-direction:column}
+.side .logo{display:flex;align-items:center;gap:9px;padding:15px 14px;border-bottom:1px solid rgba(255,255,255,.09)}
+.side .logo .dot{width:26px;height:26px;border-radius:6px;background:#65728c;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:600;flex:0 0 26px}
+.side .logo b{display:block;font-size:12.5px;color:#fff;letter-spacing:.02em}
+.side .logo em{display:block;font-style:normal;font-size:10px;color:#8b96ab;margin-top:1px}
+.side .grp{padding:13px 14px 3px;font-size:10px;color:#818da4;letter-spacing:.09em}
+.side .mi{display:flex;align-items:center;gap:8px;padding:6px 14px;font-size:12px;color:#c2cad9}
+.side .mi i{width:5px;height:5px;border-radius:1px;background:currentColor;opacity:.4;flex:0 0 5px}
+.side .mi.on{background:rgba(255,255,255,.08);color:#fff;box-shadow:inset 2px 0 0 #9fb0d0}
+.side .mi.on i{opacity:.9}
+.side .side-role{margin-top:auto;padding:10px 14px;font-size:10.5px;color:#8b96ab;border-top:1px solid rgba(255,255,255,.09)}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column;background:#f6f8fc}
+.topbar{height:48px;flex:0 0 48px;background:#fff;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:12px;padding:0 16px}
+.topbar .fold{color:#8a93a6;font-size:14px;letter-spacing:-1px}
+.topbar .crumb{font-size:12px;color:var(--sub)}
+.topbar .right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.topbar .bell{font-size:11.5px;color:var(--sub)}
+.avatar{width:24px;height:24px;border-radius:50%;background:#dde3ee;display:grid;place-items:center;font-size:11px;color:#4a5a78}
+
+.content{padding:15px 18px 22px;overflow:auto}
+
+.ph{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.ph h2{font-size:16px;letter-spacing:-.01em;display:flex;align-items:center;gap:7px}
+.ph .desc{font-size:11.5px;color:var(--sub);margin:3px 0 6px;max-width:720px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-top:3px}
+.chips .k{font-size:10.5px;color:#9aa3b5;margin-right:1px}
+.chip{font-size:10.5px;padding:1px 7px;border:1px solid var(--line);border-radius:9px;background:#fff;color:#5a6478}
+.chip.opt{border-style:dashed;color:#8a93a6}
+.ph .acts{margin-left:auto;display:flex;gap:7px;flex:0 0 auto}
+
+.btn{height:28px;padding:0 11px;border:1px solid var(--line);background:#fff;border-radius:3px;font-size:12px;color:#3c4557;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{height:22px;padding:0 7px;font-size:11px;border-radius:2px}
+.btn.full{width:100%;height:32px}
+.panel{border:1px solid var(--line2);background:#fff;border-radius:4px;margin-bottom:13px}
+.panel>.hd{height:35px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--line2);font-size:12.5px;font-weight:600}
+.panel>.hd .tip{font-weight:400;font-size:11px;color:#98a1b3}
+.panel>.hd .r{margin-left:auto;display:flex;gap:7px}
+.panel>.bd{padding:12px}
+.panel.flush>.bd{padding:0}
+
+table.wt{width:100%;border-collapse:collapse;font-size:11.5px}
+.wt th{background:#f0f3f9;font-weight:500;color:#5a6478;text-align:left;padding:7px 9px;border:1px solid var(--line2);white-space:nowrap}
+.wt td{padding:7px 9px;border:1px solid var(--line2);color:#3c4557;vertical-align:middle}
+.wt tr:nth-child(even) td{background:#fbfcfe}
+.wt .muted{color:#9aa3b5}
+.wt .num{text-align:right;font-variant-numeric:tabular-nums}
+
+.ipt{height:28px;border:1px solid var(--line);border-radius:3px;background:#fff;display:inline-flex;align-items:center;padding:0 8px;font-size:11.5px;color:#a5adbe;min-width:118px}
+.ipt.wide{min-width:180px}
+.ipt.full{display:flex;width:100%;margin-bottom:8px}
+.filters{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.filters .lb{font-size:11.5px;color:var(--sub)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:13px}
+.stat{border:1px solid var(--line2);background:#fff;border-radius:4px;padding:10px 13px}
+.stat .lb{font-size:11.5px;color:var(--sub)}
+.stat .v{font-size:21px;font-weight:600;letter-spacing:-.02em;margin:1px 0;font-variant-numeric:tabular-nums}
+.stat .ft{font-size:10.5px;color:#9aa3b5}
+
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px}
+.chart{height:148px;border:1px dashed var(--line);border-radius:3px;display:flex;align-items:flex-end;gap:12px;padding:18px 16px 10px;background:#fbfcfe}
+.chart .bar{flex:1;background:#e2e7f0;border:1px solid #c6cddb;border-radius:2px 2px 0 0;position:relative}
+.chart .bar span{position:absolute;top:-15px;left:0;right:0;text-align:center;font-size:10px;color:#8a93a6;font-variant-numeric:tabular-nums}
+.chart .bar em{position:absolute;bottom:-17px;left:0;right:0;text-align:center;font-style:normal;font-size:9.5px;color:#9aa3b5;white-space:nowrap}
+
+.prog{display:flex;align-items:center;gap:6px}
+.prog .bar{width:64px;height:5px;background:#e6eaf2;border-radius:3px;overflow:hidden;flex:0 0 64px}
+.prog .bar i{display:block;height:100%;background:#8f9bb3}
+.prog span{font-size:10.5px;color:#7c8598;font-variant-numeric:tabular-nums}
+
+.tabs{display:flex;gap:20px;border-bottom:1px solid var(--line2);margin-bottom:12px;font-size:12px}
+.tabs .t{padding-bottom:7px;color:var(--sub)}
+.tabs .t.on{color:var(--ink);font-weight:600;border-bottom:2px solid var(--accent);margin-bottom:-1px}
+
+.tag{font-size:10.5px;padding:1px 6px;border-radius:2px;border:1px solid var(--line);background:#f2f4f9;color:#5a6478;white-space:nowrap}
+.tag.ok{background:#eaf3ec;border-color:#cfe3d3;color:#3f6b4b}
+.tag.warn{background:#fdf3e3;border-color:#f0ddba;color:#8a6526}
+.tag.bad{background:#fbeaea;border-color:#efcaca;color:#8a3b3b}
+.tag.plain{background:#fff}
+
+.row{display:flex;gap:12px}
+.col{flex:1;min-width:0}
+.note{font-size:11px;color:#8a93a6;line-height:1.7}
+.note b{color:#5a6478;font-weight:600}
+hr.sep{border:0;border-top:1px dashed var(--line2);margin:12px 0}
+
+.f{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px}
+.f .lb{flex:0 0 74px;text-align:right;font-size:11.5px;color:var(--sub);padding-top:6px}
+.f .ctl{flex:1;min-width:0}
+.f .ctl .ipt{width:100%;min-width:0}
+.ta{height:58px;border:1px solid var(--line);border-radius:3px;background:#fff;padding:7px 8px;font-size:11.5px;color:#a5adbe}
+
+.cb{width:12px;height:12px;border:1px solid var(--line);border-radius:2px;display:inline-block;background:#fff;vertical-align:-2px}
+.cb.on{background:#6d7b96;border-color:#6d7b96;position:relative}
+.cb.on:after{content:"";position:absolute;left:3px;top:1px;width:4px;height:7px;border:1.5px solid #fff;border-top:0;border-left:0;transform:rotate(42deg)}
+.rb{width:12px;height:12px;border:1px solid var(--line);border-radius:50%;display:inline-block;background:#fff;vertical-align:-2px}
+.rb.on{border-color:#6d7b96;position:relative}
+.rb.on:after{content:"";position:absolute;inset:3px;border-radius:50%;background:#6d7b96}
+
+.dialog{position:relative;border:1px solid var(--line);background:#fff;border-radius:4px;padding:16px;margin:14px 0 4px}
+.dialog:before{content:"弹窗 · " attr(data-t);position:absolute;top:-9px;left:10px;background:#f6f8fc;padding:0 6px;font-size:10px;color:#8a93a6}
+.dialog .dh{font-size:12.5px;font-weight:600;margin-bottom:11px;display:flex}
+.dialog .dh .x{margin-left:auto;color:#b3bac9;font-weight:400}
+
+.sub-block{position:relative;border:1px dashed var(--line);border-radius:4px;padding:16px 12px 10px;margin-top:14px}
+.sub-block:before{content:attr(data-t);position:absolute;top:-9px;left:10px;background:#f6f8fc;padding:0 6px;font-size:10px;color:#8a93a6}
+
+.tt{display:grid;grid-template-columns:56px repeat(5,1fr);gap:3px;font-size:10.5px}
+.tt .h{background:#f0f3f9;border:1px solid var(--line2);padding:5px 4px;text-align:center;color:#5a6478}
+.tt .c{border:1px solid var(--line2);padding:5px 6px;min-height:42px;background:#fff}
+.tt .c.fill{background:#eaeef6;border-color:#c6cddb}
+.tt .c b{display:block;font-size:10.5px;font-weight:600;color:#3c4557}
+.tt .c span{display:block;color:#8a93a6;font-size:9.5px;margin-top:1px}
+
+.list{border:1px solid var(--line2);border-radius:3px}
+.list .it{display:flex;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line2);font-size:11.5px}
+.list .it:last-child{border-bottom:0}
+.list .it .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.list .it .t{font-size:10.5px;color:#9aa3b5}
+
+.pager{display:flex;align-items:center;gap:6px;padding:9px 12px;font-size:11px;color:#8a93a6}
+.pager .sp{margin-left:auto;display:flex;gap:4px}
+.pager .pg{min-width:22px;height:22px;border:1px solid var(--line);border-radius:2px;display:grid;place-items:center;background:#fff;font-size:11px}
+.pager .pg.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* 登录页 */
+.login{min-height:620px}
+.lg-brand{flex:1;background:#39414f;color:#e6eaf2;padding:56px 52px;display:flex;flex-direction:column}
+.lg-brand .badge{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.12em;color:#aab5c8;border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:3px 10px;align-self:flex-start}
+.lg-brand h1{font-size:34px;line-height:1.28;margin:22px 0 14px;letter-spacing:-.01em}
+.lg-brand p{font-size:12.5px;line-height:1.95;color:#aab4c6;max-width:330px}
+.lg-nums{display:flex;gap:30px;margin-top:28px}
+.lg-nums div{font-size:10.5px;color:#94a0b5}
+.lg-nums b{display:block;font-size:22px;color:#fff;font-weight:600;letter-spacing:-.02em}
+.lg-foot{margin-top:auto;font-size:10.5px;color:#7f8ba1;padding-top:36px}
+.lg-panel{width:404px;flex:0 0 404px;background:#fff;padding:40px 36px}
+.lg-panel h2{font-size:18px}
+.lg-panel .sub{font-size:11px;color:#8a93a6;margin:5px 0 16px}
+.roles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px}
+.role{border:1px solid var(--line2);border-radius:3px;padding:7px 8px}
+.role.on{border-color:#6d7b96;background:#eef1f7}
+.role b{display:block;font-size:11px;font-weight:600}
+.role span{display:block;font-size:9.5px;color:#9aa3b5;margin-top:1px}
+.cap{display:flex;gap:8px;margin-bottom:12px}
+.cap .ipt{flex:1}
+.capbox{width:84px;flex:0 0 84px;height:28px;border:1px solid var(--line);border-radius:3px;background:#eef1f7;display:grid;place-items:center;font-size:12px;letter-spacing:.22em;color:#5a6478}
+.lg-panel .tip{font-size:10px;color:#9aa3b5;line-height:1.75;margin-top:14px;border-top:1px dashed var(--line2);padding-top:11px}
+
+@media print{
+  body{background:#fff}
+  .nav,.head .legend,.stagebar .sp{display:none}
+  .wrap{padding:0;max-width:none}
+  .stage{overflow:visible}
+  .screen{width:100%;border:0;border-radius:0;page-break-after:always;break-after:page}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1>页面原型 · 智慧校园综合管理平台</h1>
+      <p>低保真线框图，对应 <span class="code">02_程序源码/frontend/js/pages</span> 下的 13 个页面文件。表格里的数据取自 <span class="code">seed.js</span>，与运行起来的界面一致。左侧按菜单分组，点开逐页看。</p>
+    </div>
+    <div class="legend">
+      <span><i></i>实线：已实现</span>
+      <span><i class="dash"></i>虚线：选做或未展开</span>
+    </div>
+  </header>
+  <div class="layout">
+    <nav class="nav" id="nav"></nav>
+    <div class="stage">
+      <div class="stagebar">
+        <span id="sb-title"></span>
+        <span class="code" id="sb-file"></span>
+        <span class="sp">
+          <button class="btn sm" id="btn-all">全部展开</button>
+          <button class="btn sm" id="btn-print">打印 / 存 PDF</button>
+        </span>
+      </div>
+      <div id="out"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var ROLE_NAME={admin:'系统管理员',academic:'教务管理员',counselor:'辅导员',teacher:'教师',student:'学生',librarian:'图书管理员'};
+var AVATAR={admin:'张',academic:'李',counselor:'王',teacher:'陈',student:'赵',librarian:'王'};
+
+var MENU=[
+  {g:'总览',items:[
+    {p:'/dashboard',t:'数据总览',r:['admin','academic','counselor']}
+  ]},
+  {g:'教务管理',items:[
+    {p:'/students',t:'学生信息管理',r:['admin','academic','counselor']},
+    {p:'/courses',t:'课程与排课',r:['admin','academic','teacher']},
+    {p:'/course-selection',t:'选课管理',r:['admin','academic','student']},
+    {p:'/grades',t:'成绩管理',r:['admin','academic','teacher','student']},
+    {p:'/exams',t:'考试与考务',r:['admin','academic','teacher']}
+  ]},
+  {g:'学生事务',items:[
+    {p:'/student-affairs',t:'学工与请假',r:['admin','academic','counselor']},
+    {p:'/teacher/workbench',t:'教师工作台',r:['admin','teacher']},
+    {p:'/student/portal',t:'学生端门户',r:['admin','student']}
+  ]},
+  {g:'校园服务',items:[
+    {p:'/campus/library',t:'图书借阅',r:['admin','librarian','teacher','student']},
+    {p:'/campus/venue',t:'场地预约',r:['admin','librarian','teacher','student','academic','counselor']}
+  ]},
+  {g:'消息',items:[
+    {p:'/message/center',t:'消息中心',r:['admin','academic','counselor','teacher','student','librarian']}
+  ]}
+];
+
+function shell(page,inner){
+  var groups=MENU.map(function(g){
+    return {g:g.g,items:g.items.filter(function(i){return i.r.indexOf(page.role)>-1;})};
+  }).filter(function(g){return g.items.length;});
+  var menu=groups.map(function(g){
+    return '<div class="grp">'+g.g+'</div>'+g.items.map(function(i){
+      return '<div class="mi'+(i.p===page.path?' on':'')+'"><i></i>'+i.t+'</div>';
+    }).join('');
+  }).join('');
+  return '<div class="screen">'
+    +'<aside class="side">'
+    +'<div class="logo"><span class="dot">智</span><div><b>智慧校园</b><em>综合管理平台</em></div></div>'
+    +menu
+    +'<div class="side-role">当前视角：'+ROLE_NAME[page.role]+'</div>'
+    +'</aside>'
+    +'<div class="main">'
+    +'<div class="topbar"><span class="fold">≡</span><span class="crumb">首页 / '+page.title+'</span>'
+    +'<span class="right"><span class="tag">接口模式</span><span class="bell">消息 · 3</span><span class="avatar">'+AVATAR[page.role]+'</span></span></div>'
+    +'<div class="content">'+inner+'</div>'
+    +'</div></div>';
+}
+
+var PAGES=[
+{
+  key:'login',group:'登录',no:'00',title:'登录页',owner:'公共',role:'student',path:'/login',
+  file:'js/pages/login.js',route:'/login',
+  body:''
+  +'<div class="screen login">'
+  +'<div class="lg-brand">'
+    +'<div class="badge">SMART CAMPUS</div>'
+    +'<h1>智慧校园<br>综合管理平台</h1>'
+    +'<p>覆盖学籍、排课、选课、成绩、考务、学工、图书借阅与校园服务的统一管理平台。六种角色，一套权限体系，一份数据贯穿教务主线。</p>'
+    +'<div class="lg-nums"><div><b>13</b>个核心页面</div><div><b>6</b>种角色权限</div><div><b>1.5</b>周迭代交付</div></div>'
+    +'<div class="lg-foot">前端全栈课程综合实训 · 项目三 · Vue2 + Element UI + ECharts</div>'
+  +'</div>'
+  +'<div class="lg-panel">'
+    +'<h2>账号登录</h2>'
+    +'<p class="sub">请选择角色并输入账号密码，不同角色看到的菜单不同</p>'
+    +'<div class="roles">'
+      +'<div class="role"><b>系统管理员</b><span>全部权限</span></div>'
+      +'<div class="role"><b>教务管理员</b><span>教务主线</span></div>'
+      +'<div class="role"><b>辅导员</b><span>学工审批</span></div>'
+      +'<div class="role"><b>教师</b><span>教学与成绩</span></div>'
+      +'<div class="role on"><b>学生</b><span>选课与查询</span></div>'
+      +'<div class="role"><b>图书管理员</b><span>借还与场馆</span></div>'
+    +'</div>'
+    +'<div class="ipt full">账号　student</div>'
+    +'<div class="ipt full">密码　••••••</div>'
+    +'<div class="cap"><div class="ipt">验证码</div><div class="capbox">7K3D</div></div>'
+    +'<div class="btn pri full">登 录</div>'
+    +'<p class="tip">测试账号 admin / academic / counselor / teacher / student / librarian，密码统一 123456。<br>未启动后端时自动进入本地 Mock，数据存在浏览器 localStorage。</p>'
+  +'</div>'
+  +'</div>'
+},
+{
+  key:'dashboard',group:'总览',no:'01',title:'数据总览页',owner:'A 组员',role:'admin',path:'/dashboard',
+  file:'js/pages/dashboard.js',route:'/dashboard',
+  body:shell({role:'admin',path:'/dashboard',title:'数据总览页'},
+    '<div class="ph"><div>'
+      +'<h2>数据总览页 <span class="tag">主责 A 组员</span></h2>'
+      +'<p class="desc">全平台关键指标一屏掌握：在校规模、选课热度、成绩分布与异常预警。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">在校人数</span><span class="chip">选课热度</span><span class="chip">成绩分布图表</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">异常预警</span><span class="chip opt">图表下钻</span><span class="chip opt">大屏切换</span></div>'
+    +'</div><div class="acts"><div class="btn">刷新数据</div></div></div>'
+    +'<div class="stats">'
+      +'<div class="stat"><div class="lb">在校学生</div><div class="v">10</div><div class="ft">教师 5 人</div></div>'
+      +'<div class="stat"><div class="lb">开设课程</div><div class="v">8</div><div class="ft">本学期开课计划</div></div>'
+      +'<div class="stat"><div class="lb">选课人次</div><div class="v">421</div><div class="ft">含必修与选修</div></div>'
+      +'<div class="stat"><div class="lb">待审批预约</div><div class="v">2</div><div class="ft">未读消息 5 条</div></div>'
+    +'</div>'
+    +'<div class="charts">'
+      +'<div class="panel" style="margin:0"><div class="hd">成绩分布 <span class="tip">按总评成绩分段统计</span></div><div class="bd" style="padding:0 12px 12px">'
+        +'<div class="chart">'
+        +'<div class="bar" style="height:46%"><span>2</span><em>90 以上</em></div>'
+        +'<div class="bar" style="height:68%"><span>3</span><em>80-89</em></div>'
+        +'<div class="bar" style="height:24%"><span>1</span><em>70-79</em></div>'
+        +'<div class="bar" style="height:24%"><span>1</span><em>60-69</em></div>'
+        +'<div class="bar" style="height:24%"><span>1</span><em>60 以下</em></div>'
+        +'</div></div></div>'
+      +'<div class="panel" style="margin:0"><div class="hd">选课热度 <span class="tip">开课班已选人数 Top 6</span></div><div class="bd" style="padding:0 12px 12px">'
+        +'<div class="chart">'
+        +'<div class="bar" style="height:88%"><span>88</span><em>高数</em></div>'
+        +'<div class="bar" style="height:60%"><span>60</span><em>体育</em></div>'
+        +'<div class="bar" style="height:52%"><span>52</span><em>数据结构</em></div>'
+        +'<div class="bar" style="height:49%"><span>49</span><em>AI 导论</em></div>'
+        +'<div class="bar" style="height:48%"><span>48</span><em>计网</em></div>'
+        +'<div class="bar" style="height:45%"><span>45</span><em>数据库</em></div>'
+        +'</div></div></div>'
+    +'</div>'
+    +'<div class="panel flush"><div class="hd">异常与待办预警 <span class="tip">数据来自预约、请假与选课容量</span></div>'
+      +'<table class="wt"><thead><tr><th style="width:70px">级别</th><th>内容</th><th style="width:120px">时间</th></tr></thead><tbody>'
+      +'<tr><td><span class="tag warn">待处理</span></td><td>李静 提交的「第一会议室」预约待审批</td><td class="muted">11-11 09:30</td></tr>'
+      +'<tr><td><span class="tag warn">待处理</span></td><td>陈立 提交的「A302 教室」预约待审批</td><td class="muted">11-11 11:05</td></tr>'
+      +'<tr><td><span class="tag plain">提示</span></td><td>李浩 的事假申请待审批</td><td class="muted">11-10 16:40</td></tr>'
+      +'<tr><td><span class="tag plain">提示</span></td><td>周雪 的病假申请待审批</td><td class="muted">11-11 08:15</td></tr>'
+      +'<tr><td><span class="tag bad">预警</span></td><td>高等数学（计算机 2401）选课率已达 98%</td><td class="muted">实时</td></tr>'
+      +'<tr><td><span class="tag bad">预警</span></td><td>大学英语（软件 2401）选课率已达 91%</td><td class="muted">实时</td></tr>'
+      +'</tbody></table></div>'
+  )
+},
+{
+  key:'students',group:'教务管理',no:'02',title:'学生信息管理页',owner:'B 组员',role:'academic',path:'/students',
+  file:'js/pages/students.js',route:'/students',
+  body:shell({role:'academic',path:'/students',title:'学生信息管理页'},
+    '<div class="ph"><div>'
+      +'<h2>学生信息管理页 <span class="tag">主责 B 组员</span></h2>'
+      +'<p class="desc">学籍档案的增删改查：列表筛选、分页、单个新增与编辑、导出当前页。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">学生列表</span><span class="chip">增删改查</span><span class="chip">分页筛选</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">批量导入</span><span class="chip opt">照片上传</span></div>'
+    +'</div><div class="acts"><div class="btn">导出当前页</div><div class="btn pri">新增学生</div></div></div>'
+    +'<div class="panel flush"><div class="bd" style="padding:11px 12px 0">'
+      +'<div class="filters"><span class="lb">关键字</span><div class="ipt wide">姓名 / 学号 / 班级</div>'
+        +'<span class="lb">班级</span><div class="ipt">全部</div>'
+        +'<span class="lb">状态</span><div class="ipt">全部</div>'
+        +'<div class="btn">查询</div><div class="btn">重置</div></div>'
+    +'</div>'
+      +'<table class="wt"><thead><tr><th>学号</th><th>姓名</th><th>性别</th><th>班级</th><th>专业</th><th>手机号</th><th>状态</th><th style="width:118px">操作</th></tr></thead><tbody>'
+      +'<tr><td>S2024001</td><td>赵敏</td><td>女</td><td>计算机 2401</td><td>计算机科学与技术</td><td>13800000001</td><td><span class="tag ok">在读</span></td><td><span class="btn sm">编辑</span> <span class="btn sm">删除</span></td></tr>'
+      +'<tr><td>S2024002</td><td>钱伟</td><td>男</td><td>计算机 2401</td><td>计算机科学与技术</td><td>13800000002</td><td><span class="tag ok">在读</span></td><td><span class="btn sm">编辑</span> <span class="btn sm">删除</span></td></tr>'
+      +'<tr><td>S2024003</td><td>孙悦</td><td>女</td><td>计算机 2401</td><td>计算机科学与技术</td><td>13800000003</td><td><span class="tag ok">在读</span></td><td><span class="btn sm">编辑</span> <span class="btn sm">删除</span></td></tr>'
+      +'<tr><td>S2024006</td><td>吴磊</td><td>男</td><td>计算机 2402</td><td>计算机科学与技术</td><td>13800000006</td><td><span class="tag warn">休学</span></td><td><span class="btn sm">编辑</span> <span class="btn sm">删除</span></td></tr>'
+      +'<tr><td>S2024007</td><td>郑爽</td><td>女</td><td>软件 2401</td><td>软件工程</td><td>13800000007</td><td><span class="tag ok">在读</span></td><td><span class="btn sm">编辑</span> <span class="btn sm">删除</span></td></tr>'
+      +'<tr><td>S2024010</td><td>陈晨</td><td>女</td><td>软件 2402</td><td>软件工程</td><td>13800000010</td><td><span class="tag ok">在读</span></td><td><span class="btn sm">编辑</span> <span class="btn sm">删除</span></td></tr>'
+      +'</tbody></table>'
+      +'<div class="pager"><span>共 10 条　每页 6 条</span><span class="sp"><span class="pg on">1</span><span class="pg">2</span></span></div>'
+    +'</div>'
+    +'<div class="dialog" data-t="新增 / 编辑学生"><div class="dh">新增学生<span class="x">✕</span></div>'
+      +'<div class="row"><div class="col">'
+        +'<div class="f"><div class="lb">学号</div><div class="ctl"><div class="ipt full">S2024011</div></div></div>'
+        +'<div class="f"><div class="lb">姓名</div><div class="ctl"><div class="ipt full">请输入姓名</div></div></div>'
+        +'<div class="f"><div class="lb">性别</div><div class="ctl" style="padding-top:6px"><span class="rb on"></span> 男　<span class="rb"></span> 女</div></div>'
+        +'<div class="f"><div class="lb">班级</div><div class="ctl"><div class="ipt full">计算机 2402</div></div></div>'
+      +'</div><div class="col">'
+        +'<div class="f"><div class="lb">专业</div><div class="ctl"><div class="ipt full">计算机科学与技术</div></div></div>'
+        +'<div class="f"><div class="lb">手机号</div><div class="ctl"><div class="ipt full">11 位手机号</div></div></div>'
+        +'<div class="f"><div class="lb">邮箱</div><div class="ctl"><div class="ipt full">name@campus.edu.cn</div></div></div>'
+        +'<div class="f"><div class="lb">状态</div><div class="ctl"><div class="ipt full">在读</div></div></div>'
+      +'</div></div>'
+      +'<div class="f"><div class="lb">学生照片</div><div class="ctl" style="display:flex;gap:8px;align-items:center"><div style="width:52px;height:64px;border:1px dashed var(--line);border-radius:3px;display:grid;place-items:center;color:#b3bac9;font-size:10px">照片</div><div class="btn sm">选择照片</div></div></div>'
+      +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><div class="btn">取消</div><div class="btn pri">保存</div></div>'
+    +'</div>'
+  )
+},
+{
+  key:'courses',group:'教务管理',no:'03',title:'课程与排课管理页',owner:'B 组员',role:'academic',path:'/courses',
+  file:'js/pages/courses.js',route:'/courses',
+  body:shell({role:'academic',path:'/courses',title:'课程与排课管理页'},
+    '<div class="ph"><div>'
+      +'<h2>课程与排课管理页 <span class="tag">主责 B 组员</span></h2>'
+      +'<p class="desc">课程库维护与开课计划：一门课程可以给多个班开多个教学班，容量占用和排课冲突在这里看。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">课程列表</span><span class="chip">开课计划</span><span class="chip">排课冲突检测</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">课表导出</span><span class="chip opt">拖拽排课</span></div>'
+    +'</div><div class="acts"><div class="btn">排课冲突检测</div><div class="btn">导出课表</div></div></div>'
+    +'<div class="panel flush"><div class="bd" style="padding:11px 12px 0">'
+      +'<div class="tabs"><span class="t on">开课计划与占用</span><span class="t">课程库</span></div>'
+      +'</div>'
+      +'<table class="wt"><thead><tr><th>课程</th><th>教学班</th><th>任课教师</th><th>时间</th><th>教室</th><th style="width:130px">容量占用</th><th>状态</th><th style="width:80px">操作</th></tr></thead><tbody>'
+      +'<tr><td>数据结构</td><td>计算机 2401</td><td>陈立</td><td>周一 第 1-2 节</td><td>A301</td><td><div class="prog"><div class="bar"><i style="width:87%"></i></div><span>52/60</span></div></td><td><span class="tag ok">正常</span></td><td><span class="btn sm">调整</span></td></tr>'
+      +'<tr><td>计算机网络</td><td>计算机 2401</td><td>周雯</td><td>周二 第 3-4 节</td><td>A302</td><td><div class="prog"><div class="bar"><i style="width:80%"></i></div><span>48/60</span></div></td><td><span class="tag ok">正常</span></td><td><span class="btn sm">调整</span></td></tr>'
+      +'<tr><td>数据库原理</td><td>计算机 2402</td><td>陈立</td><td>周三 第 1-2 节</td><td>A301</td><td><div class="prog"><div class="bar"><i style="width:75%"></i></div><span>45/60</span></div></td><td><span class="tag ok">正常</span></td><td><span class="btn sm">调整</span></td></tr>'
+      +'<tr><td>高等数学</td><td>计算机 2401</td><td>刘海</td><td>周一 第 3-4 节</td><td>B201</td><td><div class="prog"><div class="bar"><i style="width:98%"></i></div><span>88/90</span></div></td><td><span class="tag warn">接近满员</span></td><td><span class="btn sm">调整</span></td></tr>'
+      +'<tr><td>人工智能导论</td><td>软件 2401</td><td>周雯</td><td>周五 第 5-6 节</td><td>A401</td><td><div class="prog"><div class="bar"><i style="width:98%"></i></div><span>49/50</span></div></td><td><span class="tag warn">接近满员</span></td><td><span class="btn sm">调整</span></td></tr>'
+      +'</tbody></table>'
+      +'<div class="pager"><span>共 8 条</span></div>'
+    +'</div>'
+    +'<div class="sub-block" data-t="切到「课程库」标签页"><div style="display:flex;justify-content:flex-end;margin-bottom:9px"><div class="btn sm pri">新增课程</div></div>'
+      +'<table class="wt"><thead><tr><th>课程代码</th><th>课程名称</th><th>学分</th><th>类型</th><th>开课学院</th><th>默认教师</th></tr></thead><tbody>'
+      +'<tr><td>CS2001</td><td>数据结构</td><td>3.5</td><td><span class="tag plain">必修</span></td><td>计算机学院</td><td>陈立</td></tr>'
+      +'<tr><td>CS3001</td><td>人工智能导论</td><td>2</td><td><span class="tag">选修</span></td><td>计算机学院</td><td>周雯</td></tr>'
+      +'<tr><td>MATH1001</td><td>高等数学</td><td>4</td><td><span class="tag plain">必修</span></td><td>数学学院</td><td>刘海</td></tr>'
+      +'</tbody></table></div>'
+  )
+},
+{
+  key:'course-selection',group:'教务管理',no:'04',title:'选课管理页',owner:'C 组员',role:'student',path:'/course-selection',
+  file:'js/pages/course-selection.js',route:'/course-selection',
+  body:shell({role:'student',path:'/course-selection',title:'选课管理页'},
+    '<div class="ph"><div>'
+      +'<h2>选课管理页 <span class="tag">主责 C 组员</span></h2>'
+      +'<p class="desc">学生视角的选课入口：可选教学班、容量限制、时间冲突提示、已选课程与退课。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">可选课程</span><span class="chip">选课退课</span><span class="chip">容量控制</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">候补队列</span><span class="chip opt">课表预览</span></div>'
+    +'</div><div class="acts"><div class="btn">刷新</div></div></div>'
+    +'<div class="panel flush" style="margin-bottom:0"><div class="hd">可选课程 <span class="tip">2026-2027 学年第一学期</span></div>'
+      +'<table class="wt"><thead><tr><th>课程</th><th>教师</th><th>教学班</th><th>上课时间</th><th>教室</th><th style="width:118px">容量</th><th style="width:74px">操作</th></tr></thead><tbody>'
+      +'<tr><td>数据结构</td><td>陈立</td><td>计算机 2401</td><td>周一 第 1-2 节</td><td>A301</td><td><div class="prog"><div class="bar"><i style="width:87%"></i></div><span>52/60</span></div></td><td><span class="btn sm">退课</span></td></tr>'
+      +'<tr><td>计算机网络</td><td>周雯</td><td>计算机 2401</td><td>周二 第 3-4 节</td><td>A302</td><td><div class="prog"><div class="bar"><i style="width:80%"></i></div><span>48/60</span></div></td><td><span class="btn sm pri">选课</span></td></tr>'
+      +'<tr><td>高等数学</td><td>刘海</td><td>计算机 2401</td><td>周一 第 3-4 节</td><td>B201</td><td><div class="prog"><div class="bar"><i style="width:98%"></i></div><span>88/90</span></div></td><td><span class="btn sm pri">选课</span></td></tr>'
+      +'<tr><td>大学英语</td><td>孙倩</td><td>软件 2401</td><td>周四 第 1-2 节</td><td>C101</td><td><div class="prog"><div class="bar"><i style="width:91%"></i></div><span>41/45</span></div></td><td><span class="btn sm pri">选课</span></td></tr>'
+      +'<tr><td>人工智能导论</td><td>周雯</td><td>软件 2401</td><td>周五 第 5-6 节</td><td>A401</td><td><div class="prog"><div class="bar"><i style="width:98%"></i></div><span>49/50</span></div></td><td><span class="btn sm">已满</span></td></tr>'
+      +'</tbody></table></div>'
+    +'<div class="sub-block" data-t="右侧「我的选课」侧栏（同屏，此处下移展示）">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px"><b style="font-size:12px">我的选课</b><span class="tag">2 门 · 6.5 学分</span><span class="note" style="margin-left:auto">冲突检测：与已选课程同时段会拦截</span></div>'
+      +'<div class="list">'
+        +'<div class="it"><div class="grow"><b>数据结构</b>　陈立　周一 第 1-2 节　A301</div><span class="tag ok">已选</span><div class="btn sm">退课</div></div>'
+        +'<div class="it"><div class="grow"><b>高等数学</b>　刘海　周一 第 3-4 节　B201</div><span class="tag ok">已选</span><div class="btn sm">退课</div></div>'
+      +'</div>'
+      +'<div class="note" style="margin-top:8px">选课成功后在 <b>offerings.enrolled</b> 上 +1；退课删记录并 -1，两处要一起改。</div>'
+    +'</div>'
+  )
+},
+{
+  key:'grades',group:'教务管理',no:'05',title:'成绩管理页',owner:'C 组员',role:'teacher',path:'/grades',
+  file:'js/pages/grades.js',route:'/grades',
+  body:shell({role:'teacher',path:'/grades',title:'成绩管理页'},
+    '<div class="ph"><div>'
+      +'<h2>成绩管理页 <span class="tag">主责 C 组员</span></h2>'
+      +'<p class="desc">平时分与期末分按 4:6 自动算总评，支持单科录入、批量保存与加权统计。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">成绩录入</span><span class="chip">总评计算</span><span class="chip">加权统计</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">Excel 导入</span><span class="chip opt">成绩单导出</span></div>'
+    +'</div><div class="acts"><div class="btn">Excel 导入</div><div class="btn">加权统计</div><div class="btn pri">批量保存</div></div></div>'
+    +'<div class="panel flush"><div class="bd" style="padding:11px 12px 0">'
+      +'<div class="filters"><span class="lb">学生</span><div class="ipt">全部</div><span class="lb">课程</span><div class="ipt">全部</div><span class="lb">学期</span><div class="ipt">2026-2027-1</div><div class="btn">查询</div></div>'
+    +'</div>'
+      +'<table class="wt"><thead><tr><th>学生</th><th>课程</th><th class="num">学分</th><th class="num">平时分（40%）</th><th class="num">期末分（60%）</th><th style="width:88px">总评</th><th>结果</th><th>学期</th></tr></thead><tbody>'
+      +'<tr><td>赵敏</td><td>数据结构</td><td class="num">3.5</td><td class="num">88</td><td class="num">92</td><td><div class="ipt" style="min-width:52px;justify-content:center">90</div></td><td><span class="tag ok">及格</span></td><td>2026-2027-1</td></tr>'
+      +'<tr><td>赵敏</td><td>计算机网络</td><td class="num">3</td><td class="num">85</td><td class="num">88</td><td><div class="ipt" style="min-width:52px;justify-content:center">87</div></td><td><span class="tag ok">及格</span></td><td>2026-2027-1</td></tr>'
+      +'<tr><td>钱伟</td><td>数据结构</td><td class="num">3.5</td><td class="num">72</td><td class="num">65</td><td><div class="ipt" style="min-width:52px;justify-content:center">68</div></td><td><span class="tag ok">及格</span></td><td>2026-2027-1</td></tr>'
+      +'<tr><td>钱伟</td><td>高等数学</td><td class="num">4</td><td class="num">80</td><td class="num">76</td><td><div class="ipt" style="min-width:52px;justify-content:center">78</div></td><td><span class="tag ok">及格</span></td><td>2026-2027-1</td></tr>'
+      +'<tr><td>孙悦</td><td>人工智能导论</td><td class="num">2</td><td class="num">94</td><td class="num">96</td><td><div class="ipt" style="min-width:52px;justify-content:center">95</div></td><td><span class="tag ok">及格</span></td><td>2026-2027-1</td></tr>'
+      +'<tr><td>李浩</td><td>数据结构</td><td class="num">3.5</td><td class="num">56</td><td class="num">48</td><td><div class="ipt" style="min-width:52px;justify-content:center">52</div></td><td><span class="tag bad">不及格</span></td><td>2026-2027-1</td></tr>'
+      +'</tbody></table>'
+      +'<div class="pager"><span>共 8 条　加权平均 <b style="color:#3c4557">78.5</b>　不及格 1 人</span><span class="sp"><span class="pg on">1</span></span></div>'
+    +'</div>'
+    +'<div class="note" style="margin-top:8px">总评 = 平时分 × 0.4 + 期末分 × 0.6，四舍五入取整。总评格可手改，改完点「批量保存」一次性写回。</div>'
+  )
+},
+{
+  key:'exams',group:'教务管理',no:'06',title:'考试与考务页',owner:'D 组员',role:'academic',path:'/exams',
+  file:'js/pages/exams.js',route:'/exams',
+  body:shell({role:'academic',path:'/exams',title:'考试与考务页'},
+    '<div class="ph"><div>'
+      +'<h2>考试与考务页 <span class="tag">主责 D 组员</span></h2>'
+      +'<p class="desc">排考结果与监考安排：考场、时间、监考教师，未分配监考的场次单独标出来。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">考试安排</span><span class="chip">监考分配</span><span class="chip">考场查询</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">准考证打印</span><span class="chip opt">冲突提醒</span></div>'
+    +'</div><div class="acts"><div class="btn">导出考场安排</div><div class="btn pri">新增考试</div></div></div>'
+    +'<div class="panel flush"><table class="wt"><thead><tr><th>考试课程</th><th>班级</th><th>类型</th><th>考试日期</th><th>时间</th><th>考场</th><th>监考</th><th>状态</th><th style="width:118px">操作</th></tr></thead><tbody>'
+      +'<tr><td>数据结构</td><td>计算机 2401</td><td>期末考试</td><td>12-02</td><td>09:00-11:00</td><td>A301</td><td>陈立 / 周雯</td><td><span class="tag ok">已排考</span></td><td><span class="btn sm">监考分配</span></td></tr>'
+      +'<tr><td>高等数学</td><td>计算机 2401</td><td>期末考试</td><td>12-03</td><td>14:00-16:00</td><td>B201</td><td>刘海</td><td><span class="tag ok">已排考</span></td><td><span class="btn sm">监考分配</span></td></tr>'
+      +'<tr><td>计算机网络</td><td>计算机 2401</td><td>期末考试</td><td>12-04</td><td>09:00-11:00</td><td>A302</td><td class="muted">待分配</td><td><span class="tag warn">待排考</span></td><td><span class="btn sm pri">监考分配</span></td></tr>'
+      +'<tr><td>软件工程</td><td>软件 2401</td><td>期末考试</td><td>12-05</td><td>14:00-16:00</td><td>A303</td><td>周雯</td><td><span class="tag ok">已排考</span></td><td><span class="btn sm">监考分配</span></td></tr>'
+    +'</tbody></table><div class="pager"><span>共 4 场　待排考 1 场</span></div></div>'
+    +'<div class="dialog" data-t="监考分配"><div class="dh">监考分配 · 计算机网络<span class="x">✕</span></div>'
+      +'<div class="f"><div class="lb">考试课程</div><div class="ctl"><div class="ipt full">计算机网络（计算机 2401）</div></div></div>'
+      +'<div class="f"><div class="lb">考场</div><div class="ctl"><div class="ipt full">A302</div></div></div>'
+      +'<div class="f"><div class="lb">监考教师</div><div class="ctl"><div class="ipt full">陈立、周雯</div><div class="note" style="margin-top:4px">可多选，同一时段不能重复安排同一人</div></div></div>'
+      +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px"><div class="btn">取消</div><div class="btn pri">保存</div></div>'
+    +'</div>'
+  )
+},
+{
+  key:'student-affairs',group:'学生事务',no:'07',title:'学工与请假页',owner:'D 组员',role:'counselor',path:'/student-affairs',
+  file:'js/pages/student-affairs.js',route:'/student-affairs',
+  body:shell({role:'counselor',path:'/student-affairs',title:'学工与请假页'},
+    '<div class="ph"><div>'
+      +'<h2>学工与请假页 <span class="tag">主责 D 组员</span></h2>'
+      +'<p class="desc">学生提交请假 → 辅导员审批 → 返校销假，一个完整审批流；奖惩记录与宿舍管理列为选做。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">请假申请</span><span class="chip">审批流</span><span class="chip">销假</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">奖惩记录</span><span class="chip opt">宿舍管理</span></div>'
+    +'</div><div class="acts"><div class="btn">刷新</div></div></div>'
+    +'<div class="panel"><div class="bd" style="padding-bottom:4px">'
+      +'<div class="tabs"><span class="t on">请假申请</span><span class="t">请假记录（2 待审批）</span></div>'
+      +'<div class="row"><div class="col" style="flex:0 0 420px;max-width:420px">'
+        +'<div class="f"><div class="lb">请假类型</div><div class="ctl" style="padding-top:6px"><span class="rb on"></span> 病假　<span class="rb"></span> 事假</div></div>'
+        +'<div class="f"><div class="lb">开始日期</div><div class="ctl"><div class="ipt full">2026-11-12</div></div></div>'
+        +'<div class="f"><div class="lb">结束日期</div><div class="ctl"><div class="ipt full">2026-11-13</div></div></div>'
+        +'<div class="f"><div class="lb">请假事由</div><div class="ctl"><div class="ta">说明原因，病假请注明是否附医院证明</div></div></div>'
+        +'<div class="f"><div class="lb"></div><div class="ctl"><div class="btn pri">提交申请</div></div></div>'
+      +'</div><div class="col">'
+        +'<div style="font-size:12px;font-weight:600;margin-bottom:8px">我的请假记录</div>'
+        +'<div class="list">'
+          +'<div class="it"><div class="grow"><b>病假 2 天</b>　11-09 至 11-10<br><span class="t">发烧就医，附医院证明</span></div><span class="tag ok">已通过</span></div>'
+          +'<div class="it"><div class="grow"><b>事假 1 天</b>　11-12 至 11-12<br><span class="t">参加校外竞赛</span></div><span class="tag warn">待审批</span></div>'
+        +'</div>'
+        +'<div class="note" style="margin-top:9px">审批流转：<b>待审批</b> → <b>已通过</b> / <b>已驳回</b> → 返校后 <b>已销假</b>。驳回必须填审批意见。</div>'
+      +'</div></div></div></div>'
+    +'<div class="sub-block" data-t="切到「请假记录」标签页（辅导员视角，含审批按钮）">'
+      +'<table class="wt"><thead><tr><th>学生</th><th>班级</th><th>类型</th><th>请假区间</th><th>事由</th><th>状态</th><th>审批人</th><th style="width:130px">操作</th></tr></thead><tbody>'
+      +'<tr><td>钱伟</td><td>计算机 2401</td><td>病假</td><td>11-09 至 11-10（2 天）</td><td>发烧就医，附医院证明</td><td><span class="tag ok">已通过</span></td><td>王强</td><td><span class="btn sm">销假</span></td></tr>'
+      +'<tr><td>李浩</td><td>计算机 2402</td><td>事假</td><td>11-12 至 11-12（1 天）</td><td>参加校外竞赛</td><td><span class="tag warn">待审批</span></td><td class="muted">—</td><td><span class="btn sm pri">通过</span> <span class="btn sm">驳回</span></td></tr>'
+      +'<tr><td>周雪</td><td>计算机 2402</td><td>病假</td><td>11-11 至 11-13（3 天）</td><td>住院观察</td><td><span class="tag warn">待审批</span></td><td class="muted">—</td><td><span class="btn sm pri">通过</span> <span class="btn sm">驳回</span></td></tr>'
+      +'<tr><td>郑爽</td><td>软件 2401</td><td>事假</td><td>11-03 至 11-04（2 天）</td><td>家中有事</td><td><span class="tag bad">已驳回</span></td><td>王强</td><td class="muted">—</td></tr>'
+      +'</tbody></table></div>'
+  )
+},
+{
+  key:'teacher-workbench',group:'学生事务',no:'08',title:'教师工作台页',owner:'E 组员',role:'teacher',path:'/teacher/workbench',
+  file:'js/pages/teacher-workbench.js',route:'/teacher/workbench',
+  body:shell({role:'teacher',path:'/teacher/workbench',title:'教师工作台页'},
+    '<div class="ph"><div>'
+      +'<h2>教师工作台页 <span class="tag">主责 E 组员</span></h2>'
+      +'<p class="desc">教师登录后的首页：本周课表、待批作业、成绩提交状态与最新通知。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">我的课表</span><span class="chip">待批作业</span><span class="chip">成绩提交状态</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">在线批改</span><span class="chip opt">快捷跳转</span></div>'
+    +'</div><div class="acts"><div class="btn">刷新</div></div></div>'
+    +'<div class="stats">'
+      +'<div class="stat"><div class="lb">本学期课程</div><div class="v">2</div><div class="ft">任教班级 2 个</div></div>'
+      +'<div class="stat"><div class="lb">授课学生</div><div class="v">97</div><div class="ft">含合班人数</div></div>'
+      +'<div class="stat"><div class="lb">待批作业</div><div class="v">2</div><div class="ft">最近截止：本周五</div></div>'
+      +'<div class="stat"><div class="lb">成绩待提交</div><div class="v">2</div><div class="ft">截止：本月 25 日</div></div>'
+    +'</div>'
+    +'<div class="panel"><div class="hd">我的课表 <span class="tip">本学期 · 陈立</span></div><div class="bd">'
+      +'<div class="tt">'
+      +'<div class="h">节次</div><div class="h">周一</div><div class="h">周二</div><div class="h">周三</div><div class="h">周四</div><div class="h">周五</div>'
+      +'<div class="h">1-2</div><div class="c fill"><b>数据结构</b><span>A301 · 52 人</span></div><div class="c"></div><div class="c fill"><b>数据库原理</b><span>A301 · 45 人</span></div><div class="c"></div><div class="c"></div>'
+      +'<div class="h">3-4</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>'
+      +'<div class="h">5-6</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>'
+      +'<div class="h">7-8</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>'
+      +'</div></div></div>'
+    +'<div class="row">'
+      +'<div class="col" style="flex:2">'
+        +'<div class="panel flush" style="margin-bottom:0"><div class="hd">待批作业 <span class="tip">按截止时间排序</span></div>'
+        +'<table class="wt"><thead><tr><th>课程</th><th>作业</th><th style="width:130px">提交进度</th><th>截止时间</th><th style="width:64px">操作</th></tr></thead><tbody>'
+        +'<tr><td>数据结构</td><td>实验三：二叉树遍历</td><td><div class="prog"><div class="bar"><i style="width:88%"></i></div><span>46/52</span></div></td><td>本周五 18:00</td><td><span class="btn sm">批改</span></td></tr>'
+        +'<tr><td>数据库原理</td><td>课程设计开题报告</td><td><div class="prog"><div class="bar"><i style="width:87%"></i></div><span>39/45</span></div></td><td>下周一 12:00</td><td><span class="btn sm">批改</span></td></tr>'
+        +'</tbody></table></div>'
+      +'</div>'
+      +'<div class="col">'
+        +'<div class="panel" style="margin-bottom:0"><div class="hd">最新通知 <span class="tip">按角色推送</span></div><div class="bd" style="padding:0">'
+        +'<div class="list" style="border:0">'
+        +'<div class="it"><div class="grow">成绩录入截止提醒（教师）</div><span class="t">08:40</span></div>'
+        +'<div class="it"><div class="grow">期末考试安排已发布</div><span class="t">昨天</span></div>'
+        +'<div class="it"><div class="grow">校园歌手大赛开始报名</div><span class="t">11-08</span></div>'
+        +'</div><div style="padding:8px 10px;border-top:1px solid var(--line2);font-size:11px;color:#6b7488">查看全部消息 →</div></div></div>'
+      +'</div>'
+    +'</div>'
+  )
+},
+{
+  key:'student-portal',group:'学生事务',no:'09',title:'学生端门户页',owner:'E 组员',role:'student',path:'/student/portal',
+  file:'js/pages/student-portal.js',route:'/student/portal',
+  body:shell({role:'student',path:'/student/portal',title:'学生端门户页'},
+    '<div class="ph"><div>'
+      +'<h2>学生端门户页 <span class="tag">主责 E 组员</span></h2>'
+      +'<p class="desc">学生登录后的首页：我的课表、成绩查询、选课入口、通知公告，四个快捷入口。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">我的课表</span><span class="chip">成绩查询</span><span class="chip">选课入口</span><span class="chip">通知公告</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">收藏课程</span><span class="chip opt">评价教师</span></div>'
+    +'</div><div class="acts"><div class="btn">刷新</div></div></div>'
+    +'<div class="panel"><div class="bd" style="display:flex;align-items:center;gap:14px">'
+      +'<div class="avatar" style="width:36px;height:36px;font-size:14px">赵</div>'
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:600">赵敏　<span class="tag">计算机 2401</span></div><div class="note">2026-2027 学年第一学期 · 已修 6.5 学分</div></div>'
+      +'<div style="display:flex;gap:7px"><div class="btn">选课管理</div><div class="btn">成绩查询</div><div class="btn">场地预约</div><div class="btn">消息中心</div></div>'
+    +'</div></div>'
+    +'<div class="panel"><div class="hd">我的课表 <span class="tip">按行政班自动带出</span></div><div class="bd">'
+      +'<div class="tt">'
+      +'<div class="h">节次</div><div class="h">周一</div><div class="h">周二</div><div class="h">周三</div><div class="h">周四</div><div class="h">周五</div>'
+      +'<div class="h">1-2</div><div class="c fill"><b>数据结构</b><span>A301 · 陈立</span></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>'
+      +'<div class="h">3-4</div><div class="c fill"><b>高等数学</b><span>B201 · 刘海</span></div><div class="c fill"><b>计算机网络</b><span>A302 · 周雯</span></div><div class="c"></div><div class="c"></div><div class="c"></div>'
+      +'<div class="h">5-6</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>'
+      +'<div class="h">7-8</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>'
+      +'</div></div></div>'
+    +'<div class="row">'
+      +'<div class="col" style="flex:2">'
+        +'<div class="panel" style="margin-bottom:0"><div class="hd">成绩概览 <span class="tip">按学分加权</span></div><div class="bd">'
+          +'<div style="display:flex;gap:10px;margin-bottom:11px">'
+            +'<div class="stat" style="flex:1;margin:0"><div class="lb">加权平均分</div><div class="v">88.6</div><div class="ft">已出 2 门</div></div>'
+            +'<div class="stat" style="flex:1;margin:0"><div class="lb">不及格</div><div class="v">0</div><div class="ft">门</div></div>'
+            +'<div class="stat" style="flex:1;margin:0"><div class="lb">已修学分</div><div class="v">6.5</div><div class="ft">本学期</div></div>'
+          +'</div>'
+          +'<table class="wt"><thead><tr><th>课程</th><th class="num">学分</th><th class="num">平时分</th><th class="num">期末分</th><th class="num">总评</th><th>学期</th></tr></thead><tbody>'
+          +'<tr><td>数据结构</td><td class="num">3.5</td><td class="num">88</td><td class="num">92</td><td class="num"><b>90</b></td><td>2026-2027-1</td></tr>'
+          +'<tr><td>计算机网络</td><td class="num">3</td><td class="num">85</td><td class="num">88</td><td class="num"><b>87</b></td><td>2026-2027-1</td></tr>'
+          +'</tbody></table></div></div>'
+      +'</div>'
+      +'<div class="col">'
+        +'<div class="panel" style="margin-bottom:0"><div class="hd">通知公告</div><div class="bd" style="padding:0">'
+        +'<div class="list" style="border:0">'
+        +'<div class="it"><span class="tag warn">置顶</span><div class="grow">期末考试安排</div><span class="t">11-10</span></div>'
+        +'<div class="it"><div class="grow">场地预约审批结果</div><span class="t">11-10</span></div>'
+        +'<div class="it"><div class="grow">校园歌手大赛开始报名</div><span class="t">11-08</span></div>'
+        +'</div><div style="padding:8px 10px;border-top:1px solid var(--line2);font-size:11px;color:#6b7488">全部标记已读</div></div></div>'
+      +'</div>'
+    +'</div>'
+  )
+},
+{
+  key:'campus-venue',group:'校园服务',no:'10',title:'校园场地预约页',owner:'E 组员',role:'student',path:'/campus/venue',
+  file:'js/pages/campus-venue.js',route:'/campus/venue',
+  body:shell({role:'student',path:'/campus/venue',title:'校园场地预约页'},
+    '<div class="ph"><div>'
+      +'<h2>校园场地预约页 <span class="tag">主责 E 组员</span></h2>'
+      +'<p class="desc">场地资源、预约提交、审批工作台三个视角；容量、开放时段、时段冲突都在提交时校验。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">场地资源</span><span class="chip">预约提交</span><span class="chip">审批</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">日历视图</span><span class="chip opt">冲突可视化</span></div>'
+    +'</div><div class="acts"><div class="btn">刷新</div><div class="btn pri">新增预约</div></div></div>'
+    +'<div class="panel flush"><div class="bd" style="padding:11px 12px 0">'
+      +'<div class="tabs"><span class="t on">场地资源</span><span class="t">我的预约（1）</span><span class="t">审批工作台（2）</span></div>'
+      +'<div class="filters"><span class="lb">关键字</span><div class="ipt">场地名 / 楼栋</div><span class="lb">类型</span><div class="ipt">全部</div><span class="lb">状态</span><div class="ipt">全部</div><div class="btn">查询</div></div>'
+    +'</div>'
+      +'<table class="wt"><thead><tr><th>场地</th><th>类型</th><th>位置</th><th class="num">容量</th><th>设备</th><th>开放时段</th><th>状态</th><th style="width:64px">操作</th></tr></thead><tbody>'
+      +'<tr><td>A301 教室</td><td>教室</td><td>A 栋 3 层</td><td class="num">60</td><td>投影、空调</td><td>08:00-22:00</td><td><span class="tag ok">可用</span></td><td><span class="btn sm pri">预约</span></td></tr>'
+      +'<tr><td>B201 阶梯教室</td><td>教室</td><td>B 栋 2 层</td><td class="num">90</td><td>投影、音响、空调</td><td>08:00-21:00</td><td><span class="tag ok">可用</span></td><td><span class="btn sm pri">预约</span></td></tr>'
+      +'<tr><td>第一会议室</td><td>会议室</td><td>行政楼 5 层</td><td class="num">30</td><td>大屏、视频会议</td><td>08:30-18:00</td><td><span class="tag ok">可用</span></td><td><span class="btn sm pri">预约</span></td></tr>'
+      +'<tr><td>体育馆</td><td>场馆</td><td>体育中心 1 层</td><td class="num">200</td><td>灯光、音响</td><td>07:00-22:00</td><td><span class="tag ok">可用</span></td><td><span class="btn sm pri">预约</span></td></tr>'
+      +'<tr><td>语音室 C101</td><td>教室</td><td>C 栋 1 层</td><td class="num">45</td><td>耳机、投影</td><td>08:00-18:00</td><td><span class="tag bad">维护中</span></td><td><span class="btn sm">不可约</span></td></tr>'
+    +'</tbody></table><div class="pager"><span>共 6 个场地</span></div></div>'
+    +'<div class="dialog" data-t="提交预约"><div class="dh">提交预约<span class="x">✕</span></div>'
+      +'<div class="row"><div class="col">'
+        +'<div class="f"><div class="lb">场地</div><div class="ctl"><div class="ipt full">A301 教室（A 栋，60 人）</div></div></div>'
+        +'<div class="f"><div class="lb">日期</div><div class="ctl"><div class="ipt full">2026-11-13</div></div></div>'
+        +'<div class="f"><div class="lb">时间</div><div class="ctl" style="display:flex;gap:6px"><div class="ipt" style="flex:1">19:00</div><div class="ipt" style="flex:1">21:00</div></div></div>'
+      +'</div><div class="col">'
+        +'<div class="f"><div class="lb">用途</div><div class="ctl"><div class="ipt full">社团例会</div></div></div>'
+        +'<div class="f"><div class="lb">人数</div><div class="ctl"><div class="ipt full">20</div><div class="note" style="margin-top:4px">不得超过场地容量 60 人</div></div></div>'
+        +'<div class="f"><div class="lb">联系方式</div><div class="ctl"><div class="ipt full">13800000001</div></div></div>'
+      +'</div></div>'
+      +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><div class="btn">取消</div><div class="btn pri">提交申请</div></div>'
+    +'</div>'
+    +'<div class="sub-block" data-t="切到「审批工作台」标签页（有审批权限的角色才显示）">'
+      +'<table class="wt"><thead><tr><th>申请人</th><th>场地</th><th>日期</th><th>时段</th><th>用途</th><th class="num">人数</th><th style="width:110px">操作</th></tr></thead><tbody>'
+      +'<tr><td>李静</td><td>第一会议室</td><td>11-14</td><td>14:00-16:00</td><td>教学研讨会</td><td class="num">25</td><td><span class="btn sm pri">通过</span> <span class="btn sm">驳回</span></td></tr>'
+      +'<tr><td>陈立</td><td>A302 教室</td><td>11-15</td><td>10:00-12:00</td><td>课程补课</td><td class="num">40</td><td><span class="btn sm pri">通过</span> <span class="btn sm">驳回</span></td></tr>'
+      +'</tbody></table></div>'
+  )
+},
+{
+  key:'library',group:'校园服务',no:'11',title:'图书借阅页',owner:'王（六人版）',role:'librarian',path:'/campus/library',
+  file:'js/pages/library.js',route:'/campus/library',
+  body:shell({role:'librarian',path:'/campus/library',title:'图书借阅页'},
+    '<div class="ph"><div>'
+      +'<h2>图书借阅页 <span class="tag">主责 王（六人版）</span></h2>'
+      +'<p class="desc">馆藏检索、借阅办理、归还与续借、逾期提醒；借还时同步增减在架册数。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">馆藏检索</span><span class="chip">借阅办理</span><span class="chip">归还续借</span><span class="chip">逾期提醒</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">预约到馆</span><span class="chip opt">读者画像</span></div>'
+    +'</div><div class="acts"><div class="btn">刷新</div><div class="btn pri">新增图书</div></div></div>'
+    +'<div class="stats">'
+      +'<div class="stat"><div class="lb">馆藏总册数</div><div class="v">49</div><div class="ft">8 种图书</div></div>'
+      +'<div class="stat"><div class="lb">在架可借</div><div class="v">26</div><div class="ft">可正常借出</div></div>'
+      +'<div class="stat"><div class="lb">借阅中</div><div class="v">2</div><div class="ft">未归还记录</div></div>'
+      +'<div class="stat"><div class="lb">逾期未还</div><div class="v">1</div><div class="ft">请尽快归还或续借</div></div>'
+    +'</div>'
+    +'<div class="panel flush"><div class="bd" style="padding:11px 12px 0">'
+      +'<div class="tabs"><span class="t on">馆藏检索</span><span class="t">借阅记录（3）</span></div>'
+      +'<div class="filters"><span class="lb">关键字</span><div class="ipt wide">书名 / 作者 / ISBN</div><span class="lb">分类</span><div class="ipt">全部</div><div class="btn">检索</div></div>'
+    +'</div>'
+      +'<table class="wt"><thead><tr><th>书名</th><th>作者</th><th>ISBN</th><th>分类</th><th>出版社</th><th>馆藏位置</th><th style="width:92px">在架 / 馆藏</th><th>状态</th><th style="width:64px">操作</th></tr></thead><tbody>'
+      +'<tr><td>深入理解计算机系统</td><td>Randal E. Bryant</td><td>9787111544937</td><td>教材</td><td>机械工业出版社</td><td>A 区 3 排</td><td class="num">4 / 6</td><td><span class="tag ok">可借</span></td><td><span class="btn sm pri">借阅</span></td></tr>'
+      +'<tr><td>数据结构（C 语言版）</td><td>严蔚敏</td><td>9787302147514</td><td>教材</td><td>清华大学出版社</td><td>A 区 1 排</td><td class="num">2 / 8</td><td><span class="tag ok">可借</span></td><td><span class="btn sm pri">借阅</span></td></tr>'
+      +'<tr><td>人工智能：一种现代的方法</td><td>Stuart Russell</td><td>9787115461476</td><td>科技</td><td>人民邮电出版社</td><td>B 区 2 排</td><td class="num">0 / 4</td><td><span class="tag bad">已借完</span></td><td><span class="btn sm">借阅</span></td></tr>'
+      +'<tr><td>活着</td><td>余华</td><td>9787506365437</td><td>文学</td><td>作家出版社</td><td>C 区 4 排</td><td class="num">7 / 10</td><td><span class="tag ok">可借</span></td><td><span class="btn sm pri">借阅</span></td></tr>'
+      +'<tr><td>设计中的设计</td><td>原研哉</td><td>9787544299077</td><td>艺术</td><td>山东人民出版社</td><td>D 区 2 排</td><td class="num">1 / 3</td><td><span class="tag ok">可借</span></td><td><span class="btn sm pri">借阅</span></td></tr>'
+    +'</tbody></table><div class="pager"><span>共 8 种馆藏</span></div></div>'
+    +'<div class="sub-block" data-t="切到「借阅记录」标签页"><div style="display:flex;gap:7px;justify-content:flex-end;margin-bottom:9px"><div class="btn sm">借阅中</div><div class="btn sm">已归还</div><div class="btn sm">逾期</div></div>'
+      +'<table class="wt"><thead><tr><th>图书</th><th>读者</th><th>借出日期</th><th>应还日期</th><th>归还日期</th><th>状态</th><th class="num">续借</th><th style="width:122px">操作</th></tr></thead><tbody>'
+      +'<tr><td>深入理解计算机系统</td><td>赵敏（学生）</td><td>10-30</td><td>11-29</td><td class="muted">—</td><td><span class="tag warn">借阅中</span></td><td class="num">0</td><td><span class="btn sm">归还</span> <span class="btn sm">续借</span></td></tr>'
+      +'<tr><td>数据结构（C 语言版）</td><td>陈立（教师）</td><td>10-02</td><td>11-01</td><td class="muted">—</td><td><span class="tag bad">逾期</span></td><td class="num">1</td><td><span class="btn sm pri">归还</span></td></tr>'
+      +'<tr><td>活着</td><td>赵敏（学生）</td><td>09-12</td><td>10-12</td><td>10-07</td><td><span class="tag ok">已归还</span></td><td class="num">0</td><td class="muted">—</td></tr>'
+    +'</tbody></table><div class="note" style="margin-top:7px">「逾期」不是存储状态，是按 <b>借阅中且应还日期早于今天</b> 现算的。</div></div>'
+    +'<div class="dialog" data-t="新增图书"><div class="dh">新增图书<span class="x">✕</span></div>'
+      +'<div class="row"><div class="col">'
+        +'<div class="f"><div class="lb">书名</div><div class="ctl"><div class="ipt full">请输入书名</div></div></div>'
+        +'<div class="f"><div class="lb">作者</div><div class="ctl"><div class="ipt full">请输入作者</div></div></div>'
+        +'<div class="f"><div class="lb">ISBN</div><div class="ctl"><div class="ipt full">13 位</div></div></div>'
+        +'<div class="f"><div class="lb">分类</div><div class="ctl"><div class="ipt full">教材</div></div></div>'
+      +'</div><div class="col">'
+        +'<div class="f"><div class="lb">出版社</div><div class="ctl"><div class="ipt full">请输入出版社</div></div></div>'
+        +'<div class="f"><div class="lb">馆藏册数</div><div class="ctl"><div class="ipt full">6</div></div></div>'
+        +'<div class="f"><div class="lb">馆藏位置</div><div class="ctl"><div class="ipt full">A 区 3 排</div></div></div>'
+      +'</div></div>'
+      +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px"><div class="btn">取消</div><div class="btn pri">确认入库</div></div>'
+    +'</div>'
+  )
+},
+{
+  key:'message-center',group:'消息',no:'12',title:'校园消息中心',owner:'A 组员',role:'admin',path:'/message/center',
+  file:'js/pages/message-center.js',route:'/message/center',
+  body:shell({role:'admin',path:'/message/center',title:'校园消息中心'},
+    '<div class="ph"><div>'
+      +'<h2>校园消息中心 <span class="tag">主责 A 组员</span></h2>'
+      +'<p class="desc">按角色定向推送通知：发布、置顶、撤回、已读统计。已读是每人一条回执，不是消息上的一个开关。</p>'
+      +'<div class="chips"><span class="k">必做</span><span class="chip">消息列表</span><span class="chip">发布通知</span><span class="chip">已读统计</span></div>'
+      +'<div class="chips"><span class="k">选做</span><span class="chip opt">附件上传</span><span class="chip opt">定时发布</span></div>'
+    +'</div><div class="acts"><div class="btn">全部已读</div><div class="btn pri">发布通知</div></div></div>'
+    +'<div class="panel flush"><div class="bd" style="padding:11px 12px">'
+      +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+        +'<div class="btn sm pri">全部</div><div class="btn sm">教学</div><div class="btn sm">系统</div><div class="btn sm">审批</div><div class="btn sm">活动</div>'
+        +'<div class="ipt wide" style="margin-left:auto">标题 / 正文 / 发送人</div><div class="btn">搜索</div>'
+      +'</div></div>'
+      +'<table class="wt"><thead><tr><th style="width:54px">状态</th><th style="width:64px">分类</th><th>标题</th><th style="width:92px">发送人</th><th style="width:110px">发布时间</th><th style="width:104px">操作</th></tr></thead><tbody>'
+      +'<tr><td><span class="tag bad">未读</span></td><td>系统</td><td>系统维护通知：本周六 00:00-02:00 暂停服务</td><td>张明</td><td>11-09 17:30</td><td><span class="btn sm">查看</span> <span class="btn sm">撤回</span></td></tr>'
+      +'<tr><td><span class="tag bad">未读</span></td><td>教学</td><td><span class="tag warn">置顶</span> 2026-2027 学年第一学期期末考试安排</td><td>李静</td><td>11-10 09:00</td><td><span class="btn sm">查看</span> <span class="btn sm">撤回</span></td></tr>'
+      +'<tr><td><span class="tag plain">已读</span></td><td>审批</td><td>场地预约审批结果：A301 教室</td><td>张明</td><td>11-10 20:30</td><td><span class="btn sm">查看</span> <span class="btn sm">撤回</span></td></tr>'
+      +'<tr><td><span class="tag plain">已读</span></td><td>活动</td><td>校园歌手大赛开始报名</td><td>王强</td><td>11-08 14:00</td><td><span class="btn sm">查看</span> <span class="btn sm">撤回</span></td></tr>'
+    +'</tbody></table><div class="pager"><span>共 5 条　未读 5 条</span></div></div>'
+    +'<div class="sub-block" data-t="点「查看」后右侧滑出详情抽屉"><div style="max-width:600px">'
+      +'<div style="font-size:13px;font-weight:600;margin-bottom:4px">2026-2027 学年第一学期期末考试安排</div>'
+      +'<div class="note" style="margin-bottom:9px">教学 · 李静 · 11-10 09:00 · 置顶</div>'
+      +'<div class="note" style="line-height:1.9;color:#5a6478">各位老师、同学：本学期期末考试将于第 17-18 教学周进行，请任课教师于考前一周完成试卷提交与考场确认，学生可在「考试与考务」页面查看个人考试安排。</div>'
+      +'<div style="margin-top:10px;font-size:11.5px;color:#6b7488">附件：<span class="tag plain">期末考试安排.pdf · 1.2 MB</span></div>'
+      +'<div style="margin-top:12px;padding-top:10px;border-top:1px dashed var(--line2)">'
+        +'<div style="display:flex;align-items:center;gap:8px;font-size:11.5px"><span>已读</span><div class="prog" style="flex:1"><div class="bar" style="width:100%;flex:1"><i style="width:67%"></i></div></div><span style="font-size:11px;color:#6b7488">4 / 6</span></div>'
+      +'</div></div></div>'
+    +'<div class="dialog" data-t="发布通知"><div class="dh">发布通知<span class="x">✕</span></div>'
+      +'<div class="row"><div class="col">'
+        +'<div class="f"><div class="lb">分类</div><div class="ctl"><div class="ipt full">教学</div></div></div>'
+        +'<div class="f"><div class="lb">接收角色</div><div class="ctl" style="padding-top:5px"><span class="cb on"></span> 教师　<span class="cb on"></span> 学生　<span class="cb"></span> 教务　<span class="cb"></span> 辅导员　<span class="cb"></span> 图书管理员</div></div>'
+        +'<div class="f"><div class="lb">标题</div><div class="ctl"><div class="ipt full">请输入通知标题</div></div></div>'
+      +'</div><div class="col">'
+        +'<div class="f"><div class="lb">置顶</div><div class="ctl" style="padding-top:5px"><span class="cb"></span> 在列表顶部固定</div></div>'
+        +'<div class="f"><div class="lb">附件</div><div class="ctl" style="padding-top:5px"><div class="btn sm">选择文件</div><div class="note" style="margin-top:4px">只记录文件名和大小，不存真实文件</div></div></div>'
+      +'</div></div>'
+      +'<div class="f"><div class="lb">正文</div><div class="ctl"><div class="ta" style="height:76px">请输入通知正文</div></div></div>'
+      +'<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:8px"><div class="btn">取消</div><div class="btn pri">发布</div></div>'
+    +'</div>'
+  )
+}
+];
+
+var nav=document.getElementById('nav');
+var out=document.getElementById('out');
+var sbTitle=document.getElementById('sb-title');
+var sbFile=document.getElementById('sb-file');
+var current=PAGES[0].key;
+var allMode=false;
+
+// 支持直接链接到某一页：#dashboard 或 ?p=dashboard；?all=1 直接展开全部
+(function(){
+  var k=(location.hash||'').replace('#','');
+  try{
+    var q=new URLSearchParams(location.search);
+    if(!k) k=q.get('p')||'';
+    if(q.get('all')==='1') allMode=true;
+  }catch(e){}
+  if(k && PAGES.some(function(p){return p.key===k;})) current=k;
+})();
+
+function buildNav(){
+  var html='',last='';
+  PAGES.forEach(function(p){
+    if(p.group!==last){ html+='<div class="g">'+p.group+'</div>'; last=p.group; }
+    html+='<button data-key="'+p.key+'" class="'+(p.key===current&&!allMode?'on':'')+'">'
+      +'<span>'+p.title+'</span><em>'+p.no+'</em></button>';
+  });
+  nav.innerHTML=html;
+}
+
+function render(){
+  document.getElementById('btn-all').textContent=allMode?'单页查看':'全部展开';
+  if(allMode){
+    sbTitle.textContent='全部 '+PAGES.length+' 屏';
+    sbFile.textContent='打印时建议先点「全部展开」';
+    out.innerHTML=PAGES.map(function(p){
+      return '<div style="margin-bottom:30px">'
+        +'<div style="font-size:12px;color:#6b7488;margin-bottom:7px">'+p.title+' · '+p.owner+'　<span class="code">'+p.file+'</span></div>'
+        +p.body+'</div>';
+    }).join('');
+  }else{
+    var page=PAGES.filter(function(p){return p.key===current;})[0];
+    sbTitle.textContent=page.title+' · '+page.owner;
+    sbFile.textContent=page.file;
+    out.innerHTML=page.body;
+  }
+  buildNav();
+}
+
+nav.addEventListener('click',function(e){
+  var btn=e.target.closest('button');
+  if(!btn) return;
+  current=btn.getAttribute('data-key');
+  allMode=false;
+  if(history.replaceState) history.replaceState(null,'','#'+current);
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+document.getElementById('btn-all').addEventListener('click',function(){
+  allMode=!allMode;
+  render();
+});
+
+document.getElementById('btn-print').addEventListener('click',function(){
+  if(!allMode){ allMode=true; render(); }
+  window.print();
+});
+
+render();
+</script>
+</body>
+</html>
